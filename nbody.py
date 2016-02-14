@@ -171,6 +171,8 @@ def main():
 
     glutDisplayFunc(display)
     glutReshapeFunc(reshape)
+    glutKeyboardFunc(keyboard)
+
     glutMainLoop()
     return
 
@@ -203,5 +205,13 @@ def reshape(w,h):
     gluPerspective(60., float(w) / h , 1, 200.)
     glMatrixMode(GL_MODELVIEW)
     glutPostRedisplay();
+
+def keyboard(c, x, y):
+    if c == "+":
+        univ.dt *= 1.5
+    if c == "-":
+        univ.dt /= 1.5
+    if c == "q":
+        glutLeaveMainLoop()
 
 if __name__ == '__main__': main()
