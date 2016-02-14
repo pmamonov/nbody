@@ -162,7 +162,7 @@ def main():
     glLightfv(GL_LIGHT0, GL_AMBIENT, [0.,0.,0.,0.])
     glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION, 0.5)
     glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION, 0)
-    glLightf(GL_LIGHT0, GL_QUADRATIC_ATTENUATION, 2e-4)
+    glLightf(GL_LIGHT0, GL_QUADRATIC_ATTENUATION, 0)
     glEnable(GL_LIGHT0)
 
     glutDisplayFunc(display)
