@@ -12,6 +12,7 @@ camera_xyz = [0.,0.,100.,]
 W=400
 H=400
 trace_len=100
+pause = False
 DT = 1
 
 def deriv(q, t0, m):
@@ -205,7 +206,8 @@ def display():
 
     glutSwapBuffers()
 
-    univ.update()
+    if not pause:
+        univ.update()
 
     glutPostRedisplay();
     return
@@ -219,7 +221,7 @@ def reshape(w,h):
     glutPostRedisplay();
 
 def keyboard(c, x, y):
-    global camera_xyz, trace_len
+    global camera_xyz, trace_len, pause
 
     if c == "+":
         univ.dt *= 1.5
@@ -240,6 +242,8 @@ def keyboard(c, x, y):
                 trace_len = 0
     elif c == 'T':
         trace_len += 10
+    elif c in ' ':
+        pause = not pause
 
 def setup_camera():
     glMatrixMode(GL_PROJECTION)
