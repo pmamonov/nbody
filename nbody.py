@@ -8,6 +8,9 @@ from scipy.integrate import odeint
 
 name = 'nbody'
 univ = None
+camera_xyz = [0.,0.,100.,]
+W=400
+H=400
 DT = 1
 
 def deriv(q, t0, m):
@@ -142,7 +145,7 @@ def main():
     
     glutInit(sys.argv)
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH)
-    glutInitWindowSize(400,400)
+    glutInitWindowSize(W,H)
     glutCreateWindow(name)
 
     glClearColor(.05,0.,.1,1.)
@@ -151,14 +154,7 @@ def main():
     glEnable(GL_DEPTH_TEST)
     glEnable(GL_LIGHTING)
 
-    glMatrixMode(GL_PROJECTION)
-    gluPerspective(90.,1.,1.,200.)
-    glMatrixMode(GL_MODELVIEW)
-    gluLookAt(0,0,100,
-              0,0,0,
-              0,1,0)
-
-    glPushMatrix()
+    setup_camera()
 
     glLightfv(GL_LIGHT0, GL_POSITION, [0.,0.,0.,1.])
     glLightfv(GL_LIGHT0, GL_DIFFUSE, [1.,1.,1.,1.])
@@ -199,19 +195,37 @@ def display():
     return
 
 def reshape(w,h):
+    global W,H
+
+    W,H = w,h
     glViewport(0,0,w,h)
-    glMatrixMode(GL_PROJECTION)
-    glLoadIdentity()
-    gluPerspective(60., float(w) / h , 1, 200.)
-    glMatrixMode(GL_MODELVIEW)
+    setup_camera()
     glutPostRedisplay();
 
 def keyboard(c, x, y):
+    global camera_xyz
     if c == "+":
         univ.dt *= 1.5
     if c == "-":
         univ.dt /= 1.5
     if c == "q":
         glutLeaveMainLoop()
+    if c == 's' or c == 'w':
+        v = array(camera_xyz)
+        if c == 's':
+            camera_xyz = list(1.05 * v)
+        else:
+            camera_xyz = list(v / 1.05)
+        setup_camera()
+
+def setup_camera():
+    glMatrixMode(GL_PROJECTION)
+    glLoadIdentity()
+    gluPerspective(90.,float(W)/H,1.,2 * sqrt((array(camera_xyz)**2).sum()))
+    glMatrixMode(GL_MODELVIEW)
+    glLoadIdentity()
+    gluLookAt(camera_xyz[0],camera_xyz[1],camera_xyz[2],
+              0,0,0,
+              0,1,0)
 
 if __name__ == '__main__': main()
