@@ -47,6 +47,9 @@ class universe:
 
     def update(self):
         self.q = odeint(deriv, self.q, [0,self.dt], (self.m,))[1]
+        x = self.q[0:3 * self.n].reshape(self.n, 3)
+        M = self.m.sum()
+        x -= (x.transpose() * self.m).sum(1) / M
         scatter_vec(self.q[:3 * self.n], self.bodies, "xyz")
 
 class body:
