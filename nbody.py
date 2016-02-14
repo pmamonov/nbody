@@ -5,6 +5,7 @@ import sys
 from random import random
 from numpy import array, zeros, sqrt, meshgrid
 from scipy.integrate import odeint
+from math import acos, cos, sin, pi
 
 name = 'nbody'
 univ = None
@@ -229,13 +230,36 @@ def keyboard(c, x, y):
         univ.dt /= 1.5
     elif c == "q":
         glutLeaveMainLoop()
-    elif c == 's' or c == 'w':
-        v = array(camera_xyz)
+    elif c in 'awsdAWSD':
+        x,y,z = camera_xyz
+        r = sqrt(x**2+y**2+z**2)
+        rxz = sqrt(x**2+z**2)
+        theta = acos(y/r)
+        phi = acos(x/rxz)
+        if z < 0:
+            phi *= -1
         if c == 's':
-            camera_xyz = list(1.05 * v)
-        else:
-            camera_xyz = list(v / 1.05)
+            r *= 1.05
+        elif c == 'w':
+            r /= 1.05
+        elif c in 'aA':
+            phi += 5 * pi / 180
+        elif c in 'dD':
+            phi -= 5 * pi / 180
+        elif c == 'W':
+            theta -= 5 * pi / 180
+            if theta <= 0:
+                theta = pi * 1e-3
+        elif c == 'S':
+            theta += 5 * pi / 180
+            if theta >= pi:
+                theta = pi * (1-1e-3)
+        y = r * cos(theta)
+        x = r * sin(theta) * cos(phi)
+        z = r * sin(theta) * sin(phi)
+        camera_xyz = [x,y,z]
         setup_camera()
+
     elif c == 't':
             trace_len -= 10
             if trace_len < 0:
