@@ -11,6 +11,7 @@ univ = None
 camera_xyz = [0.,0.,100.,]
 W=400
 H=400
+trace_len=100
 DT = 1
 
 def deriv(q, t0, m):
@@ -54,6 +55,11 @@ class universe:
         M = self.m.sum()
         x -= (x.transpose() * self.m).sum(1) / M
         scatter_vec(self.q[:3 * self.n], self.bodies, "xyz")
+        for b in self.bodies:
+            b.trace.append(b.xyz)
+            while len(b.trace) > trace_len:
+                b.trace.pop(0)
+
 
 class body:
     def __init__(self,
@@ -72,6 +78,8 @@ class body:
         self.vxyz = vxyz
         self.collided = -1
         self.ls = ls
+        self.trace = []
+        self.trace.append(self.xyz)
 
 def gather_vec(bodies, prop):
     return reduce(lambda a,b: a + b, map(lambda b: b.__dict__[prop], bodies))
@@ -185,7 +193,15 @@ def display():
         glMaterialfv(GL_FRONT,GL_DIFFUSE,b.rgb + [1.])
         glMaterialfv(GL_FRONT,GL_EMISSION,b.ergb + [1.])
         glutSolidSphere(b.r,50,50)
+
         glPopMatrix()
+
+        glMaterialfv(GL_FRONT,GL_EMISSION,b.rgb + [1.])
+        glBegin(GL_LINE_STRIP)
+        for p in b.trace:
+            glVertex3f(*p)
+        glEnd()
+
 
     glutSwapBuffers()
 
@@ -203,20 +219,27 @@ def reshape(w,h):
     glutPostRedisplay();
 
 def keyboard(c, x, y):
-    global camera_xyz
+    global camera_xyz, trace_len
+
     if c == "+":
         univ.dt *= 1.5
-    if c == "-":
+    elif c == "-":
         univ.dt /= 1.5
-    if c == "q":
+    elif c == "q":
         glutLeaveMainLoop()
-    if c == 's' or c == 'w':
+    elif c == 's' or c == 'w':
         v = array(camera_xyz)
         if c == 's':
             camera_xyz = list(1.05 * v)
         else:
             camera_xyz = list(v / 1.05)
         setup_camera()
+    elif c == 't':
+            trace_len -= 10
+            if trace_len < 0:
+                trace_len = 0
+    elif c == 'T':
+        trace_len += 10
 
 def setup_camera():
     glMatrixMode(GL_PROJECTION)
