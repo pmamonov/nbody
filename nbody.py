@@ -110,9 +110,9 @@ def collide(univ):
     return universe(newbodies)
 
 def setup_univ():
-    dt = .2
+    dt = 2
     bodies = []
-    M = 1000.
+    M = 10.
     bodies.append(body( [0.,0.,0.],
                         r=5,
                         ergb=[1.,1.,0.],
