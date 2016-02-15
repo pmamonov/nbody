@@ -126,22 +126,25 @@ def setup_univ():
     dt = 2
     bodies = []
     M = 10.
-    bodies.append(body( [0.,0.,0.],
-                        r=5,
-                        ergb=[1.,1.,0.],
-                        m=M,
-                        ls = 1,
+    # a star
+    bodies.append(body( [0.,0.,0.], # 1st arg is the list of coords
+                        r=3, # spere radius
+                        ergb=[1.,1.,0.], # RGB for material emission color (optional)
+                        m=M, # mass (gravitational as well as inertial)
+                        ls = 1, # light source anchor (optional)
                         ))
     R = 30
+    # planet 1
     bodies.append(body( [R,0.,0.],
-                        r=5,
-                        rgb=[1.,0.,0.],
+                        r=3,
+                        rgb=[1.,0.,0.], # RGB for material color
                         m=1,
-                        vxyz=[0.,sqrt(M/R),0.],
+                        vxyz=[0.,sqrt(M/R),0.], # list of velocity components
                       ))
     R = 40
+    # planet 2
     bodies.append(body( [0.,0.,R],
-                        r=5,
+                        r=3,
                         rgb=[0.,1.,0.],
                         m=1,
                         vxyz=[0.,-sqrt(M/R),0.],
