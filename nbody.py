@@ -231,7 +231,7 @@ def reshape(w,h):
     glutPostRedisplay();
 
 def keyboard(c, x, y):
-    global camera_xyz, trace_len, pause
+    global univ, camera_xyz, trace_len, pause
 
     if c == "+":
         univ.dt *= 1.5
@@ -277,6 +277,8 @@ def keyboard(c, x, y):
         trace_len += 10
     elif c in ' ':
         pause = not pause
+    elif c == 'r':
+        univ = setup_univ()
 
 def setup_camera():
     glMatrixMode(GL_PROJECTION)
