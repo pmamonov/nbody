@@ -125,7 +125,7 @@ def collide(univ):
 def setup_univ():
     dt = 2
     bodies = []
-    M = 10.
+    M = 20.
     # a star
     bodies.append(body( [0.,0.,0.], # 1st arg is the list of coords
                         r=3, # spere radius
@@ -133,22 +133,28 @@ def setup_univ():
                         m=M, # mass (gravitational as well as inertial)
                         ls = 1, # light source anchor (optional)
                         ))
-    R = 30
-    # planet 1
-    bodies.append(body( [R,0.,0.],
-                        r=3,
-                        rgb=[1.,0.,0.], # RGB for material color
-                        m=1,
-                        vxyz=[0.,sqrt(M/R),0.], # list of velocity components
-                      ))
-    R = 40
-    # planet 2
-    bodies.append(body( [0.,0.,R],
-                        r=3,
-                        rgb=[0.,1.,0.],
-                        m=1,
-                        vxyz=[0.,-sqrt(M/R),0.],
-                       ))
+
+    # planets
+    R = 30.
+    for i in xrange(3):
+        rgb = [0.,0.,0.]
+        rgb[i%3] = 1.
+        V = sqrt(M/R)
+        vx = V * (2 * random() - 1)
+        vy = sqrt(V**2 - vx**2)
+        xyz = [0.,0.,0.]
+        xyz[i%3] = R
+        vxyz = [0.,0.,0.]
+        vxyz[(i+1)%3] = vx
+        vxyz[(i+2)%3] = vy
+        bodies.append(body( xyz,
+                            r=5,
+                            rgb=rgb, # RGB for material color
+                            m=1,
+                            vxyz=vxyz, # list of velocity components
+                            ))
+        M += bodies[-1].m
+        R += 10
     return universe(bodies, dt)
 
 def main():
