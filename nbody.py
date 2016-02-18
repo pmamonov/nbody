@@ -275,7 +275,7 @@ def keyboard(c, x, y):
 def setup_camera():
     glMatrixMode(GL_PROJECTION)
     glLoadIdentity()
-    gluPerspective(90.,float(W)/H,1.,2 * sqrt((array(camera_xyz)**2).sum()))
+    gluPerspective(90.,float(W)/H,1.,-1)
     glMatrixMode(GL_MODELVIEW)
     glLoadIdentity()
     gluLookAt(camera_xyz[0],camera_xyz[1],camera_xyz[2],
