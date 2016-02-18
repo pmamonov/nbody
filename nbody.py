@@ -208,9 +208,12 @@ def display():
 
         glPopMatrix()
 
-        glMaterialfv(GL_FRONT,GL_EMISSION,b.rgb + [1.])
+        glMaterialfv(GL_FRONT,GL_DIFFUSE,[0.,0.,0.,1.])
         glBegin(GL_LINE_STRIP)
-        for p in b.trace:
+        for i in xrange(0,len(b.trace),3):
+            p = b.trace[-i - 1]
+            rgb = map(lambda x: x * (trace_len - i) / trace_len, b.rgb)
+            glMaterialfv(GL_FRONT,GL_EMISSION,rgb + [1.])
             glVertex3f(*p)
         glEnd()
 
