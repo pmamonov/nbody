@@ -14,6 +14,7 @@ W=400
 H=400
 trace_len=100
 pause = False
+RMAX = 50
 DT = 1
 
 def deriv(q, t0, m):
@@ -218,6 +219,11 @@ def display():
 
     if not pause:
         univ.update()
+        xyz = array(gather_vec(univ.bodies, "xyz"))
+        R = (sqrt((xyz.reshape(univ.n, 3) ** 2).sum(1)) * univ.m).sum() / univ.m.sum()
+#        print "%.2f" % R
+        if R > RMAX:
+            univ = setup_univ()
 
     glutPostRedisplay();
     return
