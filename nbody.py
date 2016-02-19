@@ -3,7 +3,7 @@ from OpenGL.GLU import *
 from OpenGL.GL import *
 import sys
 from random import random
-from numpy import array, zeros, sqrt, meshgrid
+from numpy import array, zeros, sqrt, meshgrid, arange
 from scipy.integrate import odeint
 from math import acos, cos, sin, pi
 
@@ -12,7 +12,8 @@ univ = None
 camera_xyz = [0.,0.,100.,]
 W=400
 H=400
-trace_len=100
+trace_res = 5
+trace_len = 100 * trace_res
 pause = False
 RMAX = 50
 DT = 1
@@ -53,16 +54,23 @@ class universe:
         self.m = array(map(lambda b: b.m, bodies))
 
     def update(self):
-        self.q = odeint(deriv, self.q, [0,self.dt], (self.m,))[1]
-        x = self.q[0:3 * self.n].reshape(self.n, 3)
+        t = arange(0,self.dt,float(self.dt)/(trace_res + 1))
+        r = odeint(deriv, self.q, t, (self.m,))
+        r = r.reshape(t.shape[0],self.n * 2,3)
+        x = 1. * r[:,:self.n,:]
+        for i in xrange(t.shape[0]):
+            x[i,:,:].transpose()[:,:] *= self.m
         M = self.m.sum()
-        x -= (x.transpose() * self.m).sum(1) / M
+        c = x.sum(1) / M
+        for i in xrange(t.shape[0]):
+            r[i,:self.n,:] -= c[i,:]
+        self.q = r[-1,:,:].reshape(self.n*6)
         scatter_vec(self.q[:3 * self.n], self.bodies, "xyz")
-        for b in self.bodies:
-            b.trace.append(b.xyz)
+        for i in xrange(self.n):
+            b = self.bodies[i]
+            b.trace += map(lambda n: list(r[n,i,:]), range(1,r.shape[0]))
             while len(b.trace) > trace_len:
                 b.trace.pop(0)
-
 
 class body:
     def __init__(self,
@@ -124,7 +132,7 @@ def collide(univ):
     return universe(newbodies)
 
 def setup_univ():
-    dt = 2
+    dt = 3.
     bodies = []
     M = 20.
     # a star
@@ -210,7 +218,7 @@ def display():
 
         glMaterialfv(GL_FRONT,GL_DIFFUSE,[0.,0.,0.,1.])
         glBegin(GL_LINE_STRIP)
-        for i in xrange(0,len(b.trace),3):
+        for i in xrange(0,len(b.trace),1):
             p = b.trace[-i - 1]
             rgb = map(lambda x: x * (trace_len - i) / trace_len, b.rgb)
             glMaterialfv(GL_FRONT,GL_EMISSION,rgb + [1.])
