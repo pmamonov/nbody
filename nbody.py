@@ -51,6 +51,8 @@ class universe:
         self.q = zeros(6 * self.n)
         self.q[:3 * self.n] = gather_vec(bodies, "xyz")
         self.q[3 * self.n:] = gather_vec(bodies, "vxyz")
+        print self.q
+        sys.stdout.flush()
         self.m = array(map(lambda b: b.m, bodies))
 
     def update(self):
