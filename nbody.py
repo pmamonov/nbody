@@ -136,9 +136,9 @@ def collide(univ):
     return universe(newbodies)
 
 def setup_univ():
-    dt = 3.
+    dt = .1
     bodies = []
-    M = 20.
+    M = 1000.
     # a star
     bodies.append(body( [0.,0.,0.], # 1st arg is the list of coords
                         r=r_star, # spere radius
@@ -149,17 +149,14 @@ def setup_univ():
 
     # planets
     R = 30.
-    for i in xrange(3):
-        rgb = [0.,0.,0.]
-        rgb[i%3] = 1.
-        V = sqrt(M/R)
+    for i in xrange(10):
+        rgb = [.5+.5*random(),.5+.5*random(),.5+.5*random()]
+        xyz = [R * random(), R*random(), .01* R *random()]
+        r = sqrt((array(xyz)**2).sum())
+        V = sqrt(M/r)
         vx = V * (2 * random() - 1)
         vy = sqrt(V**2 - vx**2)
-        xyz = [0.,0.,0.]
-        xyz[i%3] = R
-        vxyz = [0.,0.,0.]
-        vxyz[(i+1)%3] = vx
-        vxyz[(i+2)%3] = vy
+        vxyz = [vx,vy,0.]
         bodies.append(body( xyz,
                             r=r_planet,
                             rgb=rgb, # RGB for material color
