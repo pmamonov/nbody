@@ -17,6 +17,8 @@ trace_len = 100 * trace_res
 pause = False
 RMAX = 50
 DT = 1
+r_planet = 0
+r_star = 0.5
 
 def deriv(q, t0, m):
     n = q.shape[0] / 6
@@ -139,7 +141,7 @@ def setup_univ():
     M = 20.
     # a star
     bodies.append(body( [0.,0.,0.], # 1st arg is the list of coords
-                        r=3, # spere radius
+                        r=r_star, # spere radius
                         ergb=[1.,1.,0.], # RGB for material emission color (optional)
                         m=M, # mass (gravitational as well as inertial)
                         ls = 1, # light source anchor (optional)
@@ -159,7 +161,7 @@ def setup_univ():
         vxyz[(i+1)%3] = vx
         vxyz[(i+2)%3] = vy
         bodies.append(body( xyz,
-                            r=5,
+                            r=r_planet,
                             rgb=rgb, # RGB for material color
                             m=1,
                             vxyz=vxyz, # list of velocity components
@@ -210,13 +212,14 @@ def display():
     for b in univ.bodies:
         if b.ls:        
             glLightfv(GL_LIGHT0, GL_POSITION, b.xyz + [1.])
-        glPushMatrix()
-        glTranslatef(*b.xyz)
-        glMaterialfv(GL_FRONT,GL_DIFFUSE,b.rgb + [1.])
-        glMaterialfv(GL_FRONT,GL_EMISSION,b.ergb + [1.])
-        glutSolidSphere(b.r,50,50)
-
-        glPopMatrix()
+        
+        if b.r > 0:
+            glPushMatrix()
+            glTranslatef(*b.xyz)
+            glMaterialfv(GL_FRONT,GL_DIFFUSE,b.rgb + [1.])
+            glMaterialfv(GL_FRONT,GL_EMISSION,b.ergb + [1.])
+            glutSolidSphere(b.r,50,50)
+            glPopMatrix()
 
         glMaterialfv(GL_FRONT,GL_DIFFUSE,[0.,0.,0.,1.])
         glBegin(GL_LINE_STRIP)
